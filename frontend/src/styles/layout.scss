@@ -1,0 +1,7 @@
+@import "./variables";
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: $bg;
+}
