@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../styles/auth.scss";
+import { signup } from "../api";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -15,14 +16,14 @@ export default function Signup() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // TODO: connect backend signup API
-    console.log("Signup data:", formData);
-
-    // Temporary success redirect
-    navigate("/login");
+    try {
+      await signup(formData);
+      navigate("/login");
+    } catch {
+      alert("Signup failed");
+    }
   };
 
   return (

@@ -5,13 +5,11 @@ const openai = new OpenAI({
 });
 
 module.exports = async (text, issuerHint) => {
-    const prompt = `
-You are a financial document parser specialized in Indian credit card statements.
-
-Your task is to extract structured data from the statement text below.
+  const prompt = `
+You are a financial document parser specialized in credit card statements.
 
 --------------------------------
-OUTPUT RULES
+OUTPUT RULES (STRICT)
 --------------------------------
 Return STRICT JSON ONLY.
 Do NOT include markdown, comments, or explanations.
@@ -29,114 +27,140 @@ JSON format:
 }
 
 --------------------------------
-GENERAL EXTRACTION RULES
+ISSUER RULES (CRITICAL)
 --------------------------------
-- issuer must be one of: HDFC, RBL, HSBC, SBI, ICICI, AXIS (or null)
-- cardLast4 = last 4 digits of card number if present
-- cardLast2 = last 2 digits ONLY if last 4 digits are not found
-- Amount fields must be numbers only:
-  - Remove commas
-  - Remove currency symbols
-  - Example: "₹12,345.67" → 12345.67
+issuer must be one of:
+HDFC, RBL, HSBC, SBI, ICICI, AXIS, EMIRATES_NBD (or null)
+
+ISSUER DETECTION:
+- "Emirates NBD", "ENBD", "الإمارات دبي الوطني" → EMIRATES_NBD
+- "RBL Bank" → RBL
 
 --------------------------------
-CURRENCY RULES (NEW)
+CARD NUMBER RULES (VERY IMPORTANT)
 --------------------------------
-Detect the statement currency.
 
-Use the following mapping:
-- ₹ or INR or Rs. → "INR"
-- AED or د.إ → "AED"
-- $ or USD → "USD"
-- € or EUR → "EUR"
+GENERAL:
+- Remove all masking characters (X, *)
+- Ignore spaces
 
-Rules:
-- Prefer explicit currency labels in totals or headers
-- If multiple currencies appear, use the PRIMARY billing currency
-- If currency cannot be confidently determined → return null
+BANK-SPECIFIC RULES:
+
+EMIRATES_NBD:
+- Card number format: "4033 XXXX XXXX 7740"
+- Extract last 4 digits → cardLast4
+- cardLast2 MUST be null
+
+SBI AND RBL:
+- Card numbers are masked and ONLY last 2 digits are valid
+- NEVER return cardLast4 for RBL
+- Extract ONLY last 2 digits → cardLast2
+- cardLast4 MUST be null
+
+--------------------------------
+CURRENCY RULES
+--------------------------------
+Detect PRIMARY billing currency.
+
+Mapping:
+- ₹ / INR / Rs. → INR
+- AED / د.إ → AED
+- $ / USD → USD
+- € / EUR → EUR
+
+--------------------------------
+ICICI BANK FIXES (STRICT)
+--------------------------------
+
+DO NOT modify billingCycle if already present.
+
+DUE DATE (ICICI):
+- Use ONLY the label "Payment Due Date"
+- NEVER guess or infer
+- Ignore any OCR-garbled text
+- Convert to format: "DD Mon YYYY"
+
+TOTAL AMOUNT (ICICI):
+- Extract ONLY from label "Total Amount Due"
+- Value may be written using "CR" (crore)
+
+CR CONVERSION RULE:
+- 1 CR = 10,000,000
+- Example:
+  "₹4.55 CR" → 45500000
+
+DO NOT return 0 if CR is present.
+
+MINIMUM AMOUNT (ICICI):
+- Extract ONLY from "Minimum Amount Due"
+- If value is "₹0.00" → return 0
+- DO NOT infer or default
 
 --------------------------------
 BILLING CYCLE RULES (CRITICAL)
 --------------------------------
 billingCycle MUST be a DATE RANGE.
-If a valid range cannot be determined, return billingCycle = null.
 
-❌ DO NOT use:
-- Statement Date
-- Due Date
-- Any single date
-
-✔ billingCycle format MUST be:
+Allowed format:
 "DD Mon YYYY - DD Mon YYYY"
+
+Use ONLY:
+- "Statement Period"
+- "Billing Period"
+
 Example:
-"20 Oct 2025 - 19 Nov 2025"
+"07-Sep-25 to 06-Oct-25"
+→ "07 Sep 2025 - 06 Oct 2025"
 
 --------------------------------
-HOW TO FIND BILLING CYCLE
+DUE DATE RULES (STRICT)
 --------------------------------
+Use ONLY labels:
+- "Payment Due Date"
+- "Due Date"
 
-STEP 1 — EXPLICIT LABEL (HIGHEST PRIORITY)
-If the statement explicitly contains a billing range, extract it.
-
-Issuer-specific labels:
-- HDFC:
-  "Billing Period", "Statement Period"
-  Example: "20 Oct, 2025 - 19 Nov, 2025"
-
-- RBL:
-  "Statement Period"
-  Example: "18-10-2025 to 17-11-2025"
-  Convert "to" → "-"
-
-- ICICI:
-  "Statement Period"
-  Example: "October 16, 2025 to December 15, 2025"
-
-- AXIS:
-  "Statement Period", "Billing Period"
-  Often appears near "Total Amount Due"
-
-- SBI:
-  "Statement Period", "Billing Period"
-
-- HSBC:
-  "Statement Period"
+❌ NEVER use:
+- Billing cycle end date
+- Statement date
 
 --------------------------------
-STEP 2 — INFER BILLING CYCLE (ONLY IF NOT EXPLICIT)
+TOTAL AMOUNT RULES (HARD LOCK)
 --------------------------------
-If NO explicit billing period label exists, infer the billing cycle using BANK-SPECIFIC LOGIC.
 
-Inference rules:
-- Identify ALL transaction dates in the statement
-- Use the EARLIEST transaction date as cycle start
-- Use the LATEST transaction date as cycle end
-- The inferred range MUST be plausible for that issuer
+totalAmount = TOTAL PAYMENT DUE ONLY.
 
-Issuer inference guidance:
-- HDFC / ICICI / AXIS / RBL:
-  Billing cycle is typically ~30 days
-- SBI:
-  Often exactly one calendar month
-- HSBC:
-  Usually 28–31 days
+✔ Accept ONLY:
+- "Total Payment Due"
+- "Total Amount Due"
 
-❗ If transaction dates are missing, incomplete, or ambiguous → billingCycle = null
+❌ ABSOLUTELY FORBIDDEN:
+- Credit Limit
+- Available Credit Limit (AED)
+- Current Balance
+- Outstanding Balance
+
+EMIRATES NBD SPECIFIC:
+- totalAmount MUST come from "STATEMENT SUMMARY"
+- Label: "Total Payment Due (AED)"
+- If multiple AED values exist and label mismatch → return null
 
 --------------------------------
-DUE DATE RULES
+MINIMUM AMOUNT RULES
 --------------------------------
-- dueDate must be a SINGLE date
-- Do NOT return a date range
-- Prefer labels:
-  "Payment Due Date"
-  "Due Date"
-  "Pay By"
+Extract ONLY from:
+- "Minimum Payment Due"
+- "Min. Amt. Due"
+
+--------------------------------
+MULTI-PAGE RULE
+--------------------------------
+- Page 1 → limits, promos
+- Page 2 → STATEMENT SUMMARY (PAYMENT VALUES)
 
 --------------------------------
 ISSUER HINT
 --------------------------------
-Issuer hint (may be incorrect): ${issuerHint || "unknown"}
+Issuer hint (may be wrong): ${issuerHint || "unknown"}
 
 --------------------------------
 STATEMENT TEXT
@@ -150,8 +174,15 @@ ${text.slice(0, 12000)}
     model: "gpt-4.1-mini",
     temperature: 0,
     messages: [
-      { role: "system", content: "You extract structured data from bank statements." },
-      { role: "user", content: prompt },
+      {
+        role: "system",
+        content:
+          "You extract bank statement data with strict financial accuracy. Never guess."
+      },
+      {
+        role: "user",
+        content: prompt
+      }
     ],
   });
 
@@ -159,7 +190,7 @@ ${text.slice(0, 12000)}
 
   try {
     return JSON.parse(raw);
-  } catch (err) {
+  } catch {
     throw new Error("OPENAI_PARSE_FAILED");
   }
 };

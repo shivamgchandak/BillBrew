@@ -1,28 +1,43 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { fetchStatements, fetchStatementById } from "../../api";
 
-const initialState = {
-  selectedStatement: {
-    issuer: "HDFC Bank",
-    holderName: "Shivam Chandak",
-    cardIdentifier: "XX57",
-    billingCycle: "18-10-2025",
-    dueDate: "07 Dec 2025",
-    totalAmount: 1831,
-    minimumAmount: 218,
-    transactions: [
-      { id: 1, name: "Amazon", amount: 1200 },
-      { id: 2, name: "Uber", amount: 450 },
-      { id: 3, name: "Swiggy", amount: 320 },
-      { id: 4, name: "Netflix", amount: 199 },
-      { id: 5, name: "Fuel", amount: 900 },
-    ],
-  },
-};
+export const getStatements = createAsyncThunk(
+  "statements/getAll",
+  async () => {
+    const { data } = await fetchStatements();
+    return data;
+  }
+);
+
+export const getStatement = createAsyncThunk(
+  "statements/getOne",
+  async (id) => {
+    const { data } = await fetchStatementById(id);
+    return data;
+  }
+);
 
 const statementsSlice = createSlice({
   name: "statements",
-  initialState,
+  initialState: {
+    list: [],
+    selected: null,
+    loading: false,
+  },
   reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getStatements.pending, (s) => {
+        s.loading = true;
+      })
+      .addCase(getStatements.fulfilled, (s, a) => {
+        s.list = a.payload;
+        s.loading = false;
+      })
+      .addCase(getStatement.fulfilled, (s, a) => {
+        s.selected = a.payload;
+      });
+  },
 });
 
 export default statementsSlice.reducer;

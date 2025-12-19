@@ -4,25 +4,20 @@ import "../styles/dashboard.scss";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
 import UploadStatementModal from "../components/UploadStatementModal";
-
-const statements = [
-  {
-    id: 1,
-    person: "Shivam Chandak",
-    bank: "HDFC Bank",
-    card: "XX57",
-  },
-  {
-    id: 2,
-    person: "Shivam Chandak",
-    bank: "RBL Bank",
-    card: "XX12",
-  },
-];
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getStatements } from "../features/statements/statementsSlice";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    dispatch(getStatements());
+  }, [dispatch]);
+
+const { list } = useSelector((state) => state.statements);
 
   return (
     <div className="dashboard">
@@ -32,7 +27,7 @@ export default function Dashboard() {
         <Topbar />
 
         <div className="dashboard__content">
-          {/* Header */}
+
           <div className="dashboard__header">
             <div>
               <h2>Statements</h2>
@@ -47,31 +42,29 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Table Card */}
           <div className="dashboard__table-card">
             <div className="dashboard__table">
               <div className="dashboard__table-head">
                 <span>Sr. No</span>
-                <span>Person Name</span>
                 <span>Card Company</span>
                 <span>Card No.</span>
                 <span>Action</span>
               </div>
 
-              {statements.map((s, index) => (
-                <div className="dashboard__row" key={s.id}>
+              {list.map((s, index) => (
+                <div className="dashboard__row" key={s._id}>
                   <span>{index + 1}</span>
-                  <span>{s.person}</span>
-                  <span>{s.bank}</span>
-                  <span className="card-chip">{s.card}</span>
+                  <span>{s.issuer}</span>
+                  <span className="card-chip">{s.cardIdentifier}</span>
                   <button
-                    className="link-btn"
-                    onClick={() => navigate(`/statements/${s.id}`)}
-                  >
-                    View
-                  </button>
+                className="link-btn"
+                onClick={() => navigate(`/statements/${s._id}`)}
+              >
+                View
+              </button>
                 </div>
               ))}
+
             </div>
           </div>
 
@@ -81,9 +74,9 @@ export default function Dashboard() {
       {showModal && (
         <UploadStatementModal
           onClose={() => setShowModal(false)}
-          onSuccess={() => {
+          onSuccess={(id) => {
             setShowModal(false);
-            navigate("/statements/1"); // mock redirect
+            navigate(`/statements/${id}`);
           }}
         />
       )}

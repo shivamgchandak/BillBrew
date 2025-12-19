@@ -7,7 +7,6 @@ export default function Home() {
   return (
     <section className="home">
 
-      {/* Navbar */}
       <nav className="home__navbar">
         <Link to="/" className="home__brand">
           <img src={logo} alt="Credo Logo" className="home__logo" />
@@ -19,7 +18,6 @@ export default function Home() {
         </Link>
       </nav>
 
-      {/* Main Content */}
       <div className="home__container">
         <div className="home__content">
           <span className="home__badge">Introducing Credo</span>
@@ -30,8 +28,23 @@ export default function Home() {
             <span>made simple.</span>
           </h1>
 
+          <p className="home__banks">
+            Supports statements from{" "}
+            <strong>
+              HDFC, RBL, SBI, Emirates NBD, ICICI
+            </strong>
+          </p>
+
           <div>
-            <img className="home__image" src={hero} alt="Credo preview" />
+            <img
+              className="home__image"
+              src={hero}
+              alt="Credo preview"
+            />
+          </div>
+
+          <div className="home__demo">
+            <p><strong>Demo Login</strong> Email: <code>test@gmail.com</code>, Password: <code>test1234</code></p>
           </div>
 
           <div className="home__actions">
@@ -43,7 +56,6 @@ export default function Home() {
             </Link>
           </div>
         </div>
-
       </div>
     </section>
   );

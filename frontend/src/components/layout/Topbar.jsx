@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/topbar.scss";
+import { User } from "lucide-react";
 
 export default function Topbar() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -22,11 +22,12 @@ export default function Topbar() {
   return (
     <header className="topbar">
       <div className="topbar__right" ref={dropdownRef}>
+        
         <div
           className="avatar"
           onClick={() => setOpen((prev) => !prev)}
         >
-          S
+          <User size={18} />
         </div>
 
         {open && (
@@ -45,7 +46,6 @@ export default function Topbar() {
             <div
               className="dropdown__item logout"
               onClick={() => {
-                // later: clear auth state
                 navigate("/login");
               }}
             >

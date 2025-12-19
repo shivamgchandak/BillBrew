@@ -1,9 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../styles/auth.scss";
+import { useDispatch } from "react-redux";
+import { login } from "../api";
+import { authSuccess } from "../features/auth/authSlice";
 
 export default function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -14,14 +18,24 @@ export default function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // TODO: connect backend auth later
-    console.log("Login data:", formData);
-
-    // Temporary success redirect
-    navigate("/dashboard");
+    try {
+      const { data } = await login(formData);
+      dispatch(
+        authSuccess({
+          user: {
+            id: data._id,
+            name: data.name,
+            email: data.email,
+          },
+          token: data.token,
+        })
+      );
+      navigate("/dashboard");
+    } catch (err) {
+      alert("Invalid credentials");
+    }
   };
 
   return (
@@ -66,6 +80,13 @@ export default function Login() {
           Don’t have an account?{" "}
           <Link to="/signup">Create one</Link>
         </p>
+
+        <div>
+            <p>Demo credentials for assignment output</p>
+            <p>Email: <code>test@gmail.com</code></p>
+            <p>Password: <code>test1234</code></p>
+        </div>
+
       </div>
     </div>
   );

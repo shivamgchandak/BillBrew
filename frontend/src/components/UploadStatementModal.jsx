@@ -1,26 +1,26 @@
 import { useState } from "react";
 import "../styles/upload-modal.scss";
+import { uploadStatement } from "../api";
 
 export default function UploadStatementModal({ onClose, onSuccess }) {
   const [file, setFile] = useState(null);
-  const [needsPassword, setNeedsPassword] = useState(false);
-  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleUpload = () => {
-    if (!file) return;
+  const handleUpload = async () => {
+    if (!file || loading) return;
 
-    // 🔴 Mock logic
-    // Assume PDFs with "secure" in name need password
-    if (file.name.toLowerCase().includes("secure")) {
-      setNeedsPassword(true);
-    } else {
-      onSuccess();
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      setLoading(true);
+      const { data } = await uploadStatement(formData);
+      onSuccess(data._id);
+    } catch (err) {
+      alert("Upload failed");
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handlePasswordSubmit = () => {
-    if (!password) return;
-    onSuccess();
   };
 
   return (
@@ -28,36 +28,26 @@ export default function UploadStatementModal({ onClose, onSuccess }) {
       <div className="modal">
         <h3>Upload Statement</h3>
 
-        {!needsPassword ? (
-          <>
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => setFile(e.target.files[0])}
-            />
+        <input
+          type="file"
+          accept="application/pdf"
+          disabled={loading}
+          onChange={(e) => setFile(e.target.files[0])}
+        />
 
-            <button className="primary-btn" onClick={handleUpload}>
-              Upload
-            </button>
-          </>
-        ) : (
-          <>
-            <p>This PDF is password protected</p>
+        <button
+          className="primary-btn"
+          onClick={handleUpload}
+          disabled={!file || loading}
+        >
+          {loading ? "Uploading…" : "Upload"}
+        </button>
 
-            <input
-              type="password"
-              placeholder="Enter PDF password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-
-            <button className="primary-btn" onClick={handlePasswordSubmit}>
-              Submit Password
-            </button>
-          </>
-        )}
-
-        <button className="link-btn cancel" onClick={onClose}>
+        <button
+          className="link-btn cancel"
+          onClick={onClose}
+          disabled={loading}
+        >
           Cancel
         </button>
       </div>
