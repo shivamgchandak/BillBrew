@@ -69,62 +69,32 @@ Mapping:
 - € / EUR → EUR
 
 --------------------------------
-ICICI BANK FIXES (ULTRA STRICT)
+ICICI BANK FIXES (STRICT)
 --------------------------------
 
-GENERAL:
-- ICICI statements are VERY noisy
-- NEVER infer or guess values
-
-BILLING CYCLE (ICICI):
-- If billingCycle already exists → DO NOT modify
-- Otherwise extract ONLY from:
-  - "Billing Period"
-  - "Statement Period"
+DO NOT modify billingCycle if already present.
 
 DUE DATE (ICICI):
-- Extract ONLY from the exact label:
-  "Payment Due Date"
-- Ignore:
-  - Statement Date
-  - Billing cycle end date
+- Use ONLY the label "Payment Due Date"
+- NEVER guess or infer
+- Ignore any OCR-garbled text
 - Convert to format: "DD Mon YYYY"
 
 TOTAL AMOUNT (ICICI):
-- Extract ONLY from the exact label:
-  "Total Amount Due"
-
-- ABSOLUTELY FORBIDDEN labels:
-  - Statement Balance
-  - Current Balance
-  - Outstanding Balance
-  - Total Outstanding
-  - Retail Balance
+- Extract ONLY from label "Total Amount Due"
+- Value may be written using "CR" (crore)
 
 CR CONVERSION RULE:
-- If value contains "CR":
-  1 CR = 10,000,000
+- 1 CR = 10,000,000
 - Example:
   "₹4.55 CR" → 45500000
 
-- Remove commas before parsing numbers
-- DO NOT default to 0
-- If label mismatch → return null
+DO NOT return 0 if CR is present.
 
 MINIMUM AMOUNT (ICICI):
-- Extract ONLY from the exact label:
-  "Minimum Amount Due"
-
-- If value is explicitly "₹0.00" → return 0
-- If label is missing → return null
-- NEVER infer from:
-  - Late fee
-  - Interest
-  - GST
-
-ICICI SANITY CHECK:
-- If totalAmount is extremely large AND minimumAmount is 0 → ACCEPT
-- This is normal ICICI behavior
+- Extract ONLY from "Minimum Amount Due"
+- If value is "₹0.00" → return 0
+- DO NOT infer or default
 
 --------------------------------
 BILLING CYCLE RULES (CRITICAL)
@@ -157,15 +127,10 @@ Use ONLY labels:
 TOTAL AMOUNT RULES (HARD LOCK)
 --------------------------------
 
-VALIDATION RULE (ALL BANKS):
-- totalAmount MUST be >= minimumAmount
-- If violated → return null
-
 totalAmount = TOTAL PAYMENT DUE ONLY.
 
 ✔ Accept ONLY:
 - "Total Payment Due"
-- "Total Payment Due (AED)"
 - "Total Amount Due"
 
 ❌ ABSOLUTELY FORBIDDEN:
