@@ -1,4 +1,5 @@
 const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -6,13 +7,20 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadPDF = async (filePath) => {
-  const result = await cloudinary.uploader.upload(filePath, {
-    resource_type: "raw",
-    folder: "credit_statements",
-  });
+const uploadPDF = (buffer) =>
+  new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: "raw",
+        folder: "credit_statements",
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result.secure_url);
+      }
+    );
 
-  return result.secure_url;
-};
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
 
 module.exports = uploadPDF;

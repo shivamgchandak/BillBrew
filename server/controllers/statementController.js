@@ -7,13 +7,14 @@ const parseWithOpenAI = require("../utils/parseWithOpenAI");
 
 exports.uploadStatement = async (req, res) => {
   try {
-    const text = await extractText(req.file.path);
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
 
+    const text = await extractText(req.file.buffer);
     const issuerHint = detectIssuer(text);
-
     const parsedData = await parseWithOpenAI(text, issuerHint);
-
-    const pdfUrl = await uploadPDF(req.file.path);
+    const pdfUrl = await uploadPDF(req.file.buffer);
 
     const statement = await Statement.create({
       user: req.user._id,
@@ -25,7 +26,6 @@ exports.uploadStatement = async (req, res) => {
       ...statement.toObject(),
       cardIdentifier: formatCardIdentifier(statement),
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({

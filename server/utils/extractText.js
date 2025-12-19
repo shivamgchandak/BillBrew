@@ -1,16 +1,12 @@
-const fs = require("fs");
 const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
 
-const extractText = async (filePath, password = null) => {
-  const data = new Uint8Array(fs.readFileSync(filePath));
+const extractText = async (buffer, password = null) => {
+  const data = new Uint8Array(buffer);
 
   try {
-    const loadingTask = pdfjsLib.getDocument({
-      data,
-      password,
-    });
-
+    const loadingTask = pdfjsLib.getDocument({ data, password });
     const pdf = await loadingTask.promise;
+
     let text = "";
 
     for (let i = 1; i <= pdf.numPages; i++) {
