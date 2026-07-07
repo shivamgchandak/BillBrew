@@ -1,56 +1,63 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { User, LogOut, LayoutDashboard } from "lucide-react";
+import { logout } from "../../features/auth/authSlice";
 import "../../styles/topbar.scss";
-import { User } from "lucide-react";
 
 export default function Topbar() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((s) => s.auth.user);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const onClick = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setOpen(false);
       }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
   }, []);
+
+  const initials = (user?.name || "U")
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <header className="topbar">
       <div className="topbar__right" ref={dropdownRef}>
-        
-        <div
-          className="avatar"
-          onClick={() => setOpen((prev) => !prev)}
-        >
-          <User size={18} />
+        <div className="avatar" onClick={() => setOpen((p) => !p)}>
+          {initials}
         </div>
 
         {open && (
           <div className="dropdown">
-            <div className="dropdown__header">My Account</div>
-
-            <div
-              className="dropdown__item"
-              onClick={() => navigate("/dashboard")}
-            >
-              Dashboard
+            <div className="dropdown__header">
+              <div className="dropdown__name">{user?.name || "Account"}</div>
+              <div className="dropdown__email">{user?.email}</div>
             </div>
+
+            <button
+              className="dropdown__item"
+              onClick={() => { setOpen(false); navigate("/dashboard"); }}
+            >
+              <LayoutDashboard size={14} /> Dashboard
+            </button>
 
             <div className="dropdown__divider" />
 
-            <div
+            <button
               className="dropdown__item logout"
-              onClick={() => {
-                navigate("/login");
-              }}
+              onClick={() => { dispatch(logout()); navigate("/", { replace: true }); }}
             >
-              Log out
-            </div>
+              <LogOut size={14} /> Log out
+            </button>
           </div>
         )}
       </div>

@@ -9,26 +9,26 @@ const statementSchema = new mongoose.Schema(
     },
 
     issuer: String,
-    currency: {
-      type: String,
-      default: "INR",
-    },
+    issuerFull: String,
+    cardNetwork: String,
+    currency: { type: String, default: "INR" },
 
     cardLast4: String,
     cardLast2: String,
+    cardholderName: String,
 
     billingCycle: String,
+    statementDate: String,
     dueDate: String,
 
     totalAmount: Number,
     minimumAmount: Number,
+    creditLimit: Number,
+    availableCredit: Number,
 
     pdfUrl: String,
 
-    uploadedAt: {
-      type: Date,
-      default: Date.now,
-    },
+    uploadedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );

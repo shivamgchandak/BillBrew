@@ -1,67 +1,106 @@
 @import "./variables";
 
 .sidebar {
-  width: 240px;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
-  padding: 1.5rem;
+  width: 260px;
+  background: $surface;
+  border-right: 1px solid $border;
+  padding: 22px 16px;
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
 .sidebar__brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 1.4rem;
-  font-weight: 700;
+  gap: 10px;
   cursor: pointer;
-  margin-bottom: 2rem;
+  margin-bottom: 28px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background .15s;
+  &:hover { background: $bg; }
 
-  img {
-    width: 36px;
-    height: 36px;
+  img { width: 36px; height: 36px; }
+  span {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    b { color: $primary; }
   }
 }
 
 .sidebar__nav {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 2px;
 }
 
 .sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: none;
   border: none;
   text-align: left;
-  padding: 0.6rem 0.75rem;
-  border-radius: 6px;
-  font-size: 1rem;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $ink-soft;
   cursor: pointer;
+  transition: background .15s, color .15s;
 
-  &:hover {
-    background: #f1f5f9;
+  &:hover { background: $bg; }
+  &.is-active {
+    background: $primary-light;
+    color: $primary-dark;
   }
+
+  .chev { margin-left: auto; transition: transform .2s; }
+  .chev.open { transform: rotate(180deg); }
 }
 
 .sidebar__dropdown {
-  margin-left: 1rem;
+  margin: 4px 0 4px 12px;
+  padding-left: 12px;
+  border-left: 1px solid $border;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 2px;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .sidebar__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: none;
   border: none;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.95rem;
+  padding: 7px 10px;
+  font-size: 13px;
   text-align: left;
   border-radius: 6px;
   cursor: pointer;
-  color: #2563eb;
+  color: $ink-soft;
+  transition: background .15s;
 
-  &:hover {
-    background: #e0e7ff;
+  &:hover { background: $bg; }
+  &.is-active { background: $primary-light; color: $primary-dark; }
+  &.muted { color: $muted-2; cursor: default; }
+
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: $primary; flex: 0 0 auto;
   }
+}
+
+.sidebar__footer {
+  margin-top: auto;
+  padding: 12px 8px 4px;
+  color: $muted-2;
+  font-size: 11px;
 }

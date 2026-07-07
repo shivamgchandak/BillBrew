@@ -1,7 +1,7 @@
 {
-  "name": "server",
+  "name": "billbrew-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "BillBrew API — credit card statement parser powered by Grok",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.1",
     "multer": "^2.0.2",
+    "nodemailer": "^6.9.16",
     "openai": "^6.14.0",
     "pdf-parse": "^2.4.5",
     "pdfjs-dist": "^3.11.174",

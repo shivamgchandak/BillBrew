@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bbGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square badge -->
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#bbGrad)"/>
+
+  <!-- Steam wisps (top) -->
+  <path d="M22 12c2 3-2 5 0 8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".85"/>
+  <path d="M32 10c2 3-2 5 0 8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".85"/>
+  <path d="M42 12c2 3-2 5 0 8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".85"/>
+
+  <!-- Coffee cup body (mug) — represents 'brewing' -->
+  <path d="M16 26h26v10a12 12 0 0 1-12 12h-2a12 12 0 0 1-12-12V26z" fill="#fff"/>
+
+  <!-- Handle -->
+  <path d="M42 30h4a5 5 0 0 1 0 10h-4" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- 'b' monogram inside the cup -->
+  <path d="M23 30v14M23 37a4 4 0 1 1 8 0 4 4 0 0 1-8 0z"
+        stroke="#ea580c" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

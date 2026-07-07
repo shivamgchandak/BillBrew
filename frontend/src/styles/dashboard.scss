@@ -1,128 +1,210 @@
 @import "./variables";
 
-/* Layout */
 .dashboard {
   display: flex;
   min-height: 100vh;
-  background: #f9fafb;
+  background: $bg;
 }
 
 .dashboard__main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .dashboard__content {
-  padding: 32px;
+  padding: 28px 32px 48px;
   max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 }
 
-/* Header */
+// Header ----------------------------------------------------------
 .dashboard__header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 20px;
 
   h2 {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 4px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
   }
-
-  p {
-    font-size: 14px;
-    color: #6b7280;
-  }
+  p { font-size: 14px; color: $muted; margin: 0; }
 }
 
-/* Button */
-.primary-btn {
-  background: $primary;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-
-  &:hover {
-    opacity: 0.9;
-  }
+// Stat cards ------------------------------------------------------
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
 }
-
-/* Table Card */
-.dashboard__table-card {
-  background: #fff;
-  border-radius: 12px;
+.stat {
+  background: $surface;
   border: 1px solid $border;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
+  border-radius: $radius;
+  padding: 14px 16px;
+  box-shadow: $shadow-sm;
+
+  &--accent {
+    background: linear-gradient(135deg, $primary, $primary-dark);
+    color: #fff;
+    border-color: transparent;
+    .stat__label { color: rgba(255, 255, 255, .85); }
+  }
+}
+.stat__label {
+  font-size: 12px;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 4px;
+}
+.stat__value {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  .cur { font-size: 12px; color: $muted; font-weight: 600; margin-right: 4px; }
+}
+.stat--accent .stat__value .cur { color: rgba(255,255,255,.8); }
+
+// Toolbar ---------------------------------------------------------
+.dashboard__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.dashboard__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 8px 12px;
+  min-width: 260px;
+  color: $muted;
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: none;
+    font-family: inherit;
+    font-size: 13px;
+    color: $ink;
+    &::placeholder { color: $muted-2; }
+  }
 }
 
-/* Table */
-.dashboard__table {
-  width: 100%;
+// Table -----------------------------------------------------------
+.dashboard__table-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
 }
 
 .dashboard__table-head,
 .dashboard__row {
   display: grid;
   grid-template-columns:
-    0.5fr   /* Sr No */
-    2fr     /* Person */
-    1.5fr   /* Bank */
-    1fr     /* Card */
-    1fr;    /* Action */
+    50px         /* # */
+    1.6fr        /* issuer */
+    1fr          /* card */
+    1fr          /* due */
+    1fr          /* total */
+    28px;        /* chev */
   align-items: center;
-  padding: 14px 18px;
+  gap: 10px;
+  padding: 12px 18px;
 }
 
-/* Table Head */
 .dashboard__table-head {
-  background: #f9fafb;
-  font-weight: 600;
-  font-size: 14px;
+  background: $bg;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $muted;
   border-bottom: 1px solid $border;
 }
 
-/* Rows */
 .dashboard__row {
+  border-bottom: 1px solid $border;
   font-size: 14px;
-  border-bottom: 1px solid #eee;
-  transition: background 0.15s ease;
+  cursor: pointer;
+  transition: background .12s;
 
   &:hover {
-    background: #f9fafb;
+    background: $primary-light;
+    .row__chev { color: $primary-dark; transform: translateX(2px); }
   }
-
-  &:last-child {
-    border-bottom: none;
-  }
+  &:last-child { border-bottom: none; }
+}
+.row__chev {
+  color: $muted-2;
+  transition: transform .15s, color .15s;
+  justify-self: end;
 }
 
-/* Card number chip */
+.num {
+  font-size: 12px;
+  color: $muted;
+  font-weight: 600;
+}
+
+.issuer {
+  display: flex; align-items: center; gap: 10px;
+
+  strong { display: block; font-weight: 600; }
+  em    { display: block; font-style: normal; font-size: 12px; color: $muted; }
+}
+.issuer__badge {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  background: $primary-light;
+  color: $primary-dark;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
 .card-chip {
-  font-weight: 500;
-  color: #374151;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  padding: 3px 8px;
+  background: $bg;
+  border: 1px solid $border;
+  border-radius: 999px;
+  color: $ink-soft;
+  width: fit-content;
 }
 
-.dashboard__table-head span:last-child,
-.dashboard__row button {
+.cur {
+  font-size: 12px;
+  color: $muted;
+  font-style: normal;
+  font-weight: 600;
+  margin-right: 3px;
+}
+
+.dashboard__empty {
+  padding: 42px 24px;
   text-align: center;
-  justify-self: center;
-}
-
-.link-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  color: #2563eb; // blue
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.link-btn:hover {
-  text-decoration: underline;
+  color: $muted;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  p { margin: 0; font-size: 14px; }
 }

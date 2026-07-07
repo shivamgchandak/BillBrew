@@ -1,5 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchStatements, fetchStatementById } from "../../api";
+import {
+  fetchStatements,
+  fetchStatementById,
+  deleteStatement,
+} from "../../api";
 
 export const getStatements = createAsyncThunk(
   "statements/getAll",
@@ -17,6 +21,14 @@ export const getStatement = createAsyncThunk(
   }
 );
 
+export const removeStatement = createAsyncThunk(
+  "statements/remove",
+  async (id) => {
+    await deleteStatement(id);
+    return id;
+  }
+);
+
 const statementsSlice = createSlice({
   name: "statements",
   initialState: {
@@ -27,15 +39,16 @@ const statementsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getStatements.pending, (s) => {
-        s.loading = true;
-      })
+      .addCase(getStatements.pending, (s) => { s.loading = true; })
       .addCase(getStatements.fulfilled, (s, a) => {
         s.list = a.payload;
         s.loading = false;
       })
-      .addCase(getStatement.fulfilled, (s, a) => {
-        s.selected = a.payload;
+      .addCase(getStatements.rejected, (s) => { s.loading = false; })
+      .addCase(getStatement.fulfilled, (s, a) => { s.selected = a.payload; })
+      .addCase(removeStatement.fulfilled, (s, a) => {
+        s.list = s.list.filter((x) => x._id !== a.payload);
+        if (s.selected?._id === a.payload) s.selected = null;
       });
   },
 });

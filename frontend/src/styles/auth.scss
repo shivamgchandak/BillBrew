@@ -1,84 +1,194 @@
+@import "./variables";
+
 .auth {
   min-height: 100vh;
-  background: #f8fafc;
+  background:
+    radial-gradient(700px 400px at 90% -10%, rgba(249, 115, 22, .18), transparent 60%),
+    radial-gradient(600px 400px at -10% 20%, rgba(249, 115, 22, .1), transparent 60%),
+    $bg;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 32px 16px;
 }
 
 .auth__card {
-  background: #ffffff;
+  background: $surface;
   width: 100%;
-  max-width: 380px;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  max-width: 420px;
+  padding: 36px 32px 28px;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  box-shadow: $shadow-lg;
+}
+
+.auth__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  text-decoration: none;
+  color: $ink;
+
+  img { width: 36px; height: 36px; }
+
+  span {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    b { color: $primary; font-weight: 800; }
+  }
 }
 
 .auth__title {
-  font-size: 1.8rem;
+  font-size: 26px;
   font-weight: 700;
-  margin-bottom: 0.3rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
 }
 
 .auth__subtitle {
-  font-size: 0.95rem;
-  color: #6b7280;
-  margin-bottom: 1.5rem;
+  font-size: 14px;
+  color: $muted;
+  margin: 0 0 24px;
+  line-height: 1.5;
 }
 
 .auth__form {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 14px;
 }
 
 .auth__field {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 6px;
 
   label {
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
+    color: $ink-soft;
   }
 
   input {
-    padding: 0.65rem 0.8rem;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    font-size: 0.95rem;
+    padding: 11px 14px;
+    border-radius: $radius-sm;
+    border: 1px solid $border-strong;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: $ink;
+    transition: border-color .15s, box-shadow .15s;
 
+    &::placeholder { color: $muted-2; }
     &:focus {
       outline: none;
-      border-color: #2563eb;
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, .15);
     }
   }
 }
 
 .auth__btn {
-  margin-top: 0.5rem;
-  background: #2563eb;
+  margin-top: 8px;
+  background: $primary;
   color: #fff;
-  padding: 0.7rem;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: $radius-sm;
   border: none;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
-
-  &:hover {
-    background: #1e40af;
-  }
+  transition: background .15s;
+  &:hover:not(:disabled) { background: $primary-dark; }
+  &:disabled { opacity: .55; cursor: not-allowed; }
 }
 
 .auth__footer {
-  margin-top: 1.2rem;
-  font-size: 0.9rem;
+  margin-top: 20px;
+  font-size: 13px;
   text-align: center;
+  color: $muted;
 
   a {
-    color: #2563eb;
+    color: $primary-dark;
     font-weight: 600;
     text-decoration: none;
   }
+}
+
+.auth__demo {
+  margin-top: 18px;
+  padding: 12px 14px;
+  background: $primary-light;
+  border-radius: $radius-sm;
+  font-size: 12px;
+  color: $ink-soft;
+  border: 1px solid rgba(249, 115, 22, .2);
+
+  p { margin: 2px 0; }
+  code {
+    background: #fff;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 11px;
+  }
+}
+
+.auth__error {
+  background: #fef2f2;
+  color: $danger;
+  border: 1px solid #fecaca;
+  padding: 10px 12px;
+  border-radius: $radius-sm;
+  font-size: 13px;
+}
+
+.auth__info {
+  background: #ecfdf5;
+  color: $success;
+  border: 1px solid #bbf7d0;
+  padding: 10px 12px;
+  border-radius: $radius-sm;
+  font-size: 13px;
+}
+
+// OTP-specific -----------------------------------------------------
+.otp__group {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 12px 0 4px;
+
+  input {
+    width: 44px;
+    height: 52px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    border: 1px solid $border-strong;
+    border-radius: $radius-sm;
+    background: #fff;
+    font-family: inherit;
+    color: $ink;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, .15);
+    }
+  }
+}
+
+.otp__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: $muted;
+  margin-top: 6px;
+
+  button { background: none; border: none; padding: 0; color: $primary-dark; font-weight: 600; cursor: pointer; }
+  button:disabled { color: $muted-2; cursor: not-allowed; }
 }

@@ -1,9 +1,21 @@
 const express = require("express");
-const { signup, login } = require("../controllers/authController");
+const {
+  requestSignupOtp,
+  verifySignupOtp,
+  resendSignupOtp,
+  login,
+} = require("../controllers/authController");
 
 const router = express.Router();
 
-router.post("/signup", signup);
+// New OTP-based signup flow
+router.post("/signup/request-otp", requestSignupOtp);
+router.post("/signup/verify-otp", verifySignupOtp);
+router.post("/signup/resend-otp", resendSignupOtp);
+
+// Backwards-compatible alias so old clients don't break — hits the OTP request.
+router.post("/signup", requestSignupOtp);
+
 router.post("/login", login);
 
 module.exports = router;
