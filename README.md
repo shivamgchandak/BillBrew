@@ -3,20 +3,27 @@
 **BillBrew** is a full-stack web app that turns messy credit-card statement
 PDFs — from *any* bank in the world — into clean, structured data. Upload,
 brew, and get issuer, billing cycle, due date, currency, total payable,
-minimum due, credit limit and more, all extracted by an LLM.
+minimum due, credit limit and more, all extracted automatically.
+
+**Live demo**: [billbrew.vercel.app](https://billbrew.vercel.app)
 
 ---
 
-## Highlights
+## What it does
 
-- **Works with any issuer** — HDFC, ICICI, SBI, Axis, Chase, Amex, Discover,
-  Emirates NBD, HSBC, Barclays, Revolut… anything, in any currency.
-- **Powered by Groq** (`llama-3.3-70b-versatile`, JSON mode) — generous free tier at speeds most hosted LLMs can't match.
+- **Works with any issuer, any currency** — HDFC, ICICI, SBI, Axis, Chase,
+  Amex, Discover, Emirates NBD, HSBC, Barclays, Revolut… anything, in INR,
+  USD, AED, EUR, GBP or beyond.
 - **Password-protected PDFs** — the app detects encryption and prompts you
-  for the password in-flow.
-- **Email OTP signup** — six-digit verification code by email (Nodemailer +
-  Gmail SMTP), 10-minute expiry, rate-limited attempts.
-- **Modern UI** — Inter typeface, warm palette, responsive dashboard.
+  for the password in-flow, no manual decryption needed.
+- **All your statements in one place** — every parsed statement is saved to
+  your dashboard with a one-click link back to the original PDF.
+- **Instant search &amp; totals** — filter by issuer, card, currency or due
+  date, and see a running total across every card you've uploaded.
+- **Verified email accounts** — signup is tied to a real email via a
+  six-digit verification code, so your statements stay with you.
+- **Structured output** — issuer, network, cycle, due date, totals, minimum,
+  credit limit — ready for your dashboards or workflows.
 
 ---
 
@@ -26,20 +33,21 @@ minimum due, credit limit and more, all extracted by an LLM.
 |-----------|----------------------------------------------------|
 | Frontend  | React 19 (Vite), Redux Toolkit, SCSS               |
 | Backend   | Node.js, Express 5, MongoDB (Mongoose)             |
-| AI parser | Groq (`llama-3.3-70b-versatile`, JSON mode)        |
+| AI parser | OpenAI-compatible LLM in strict JSON mode          |
 | PDF       | `pdfjs-dist` (handles encrypted PDFs)              |
 | Email     | Nodemailer + Gmail SMTP                            |
 | Storage   | Cloudinary (raw PDF backup)                        |
+| Hosting   | Frontend on Vercel · Backend on Render             |
 
 ---
 
 ## Getting started
 
-### 1. Clone & install
+### 1. Clone &amp; install
 
 ```bash
-git clone <this repo>
-cd surefullstack
+git clone https://github.com/shivamgchandak/BillBrew.git
+cd BillBrew
 
 cd server && npm install
 cd ../frontend && npm install
@@ -60,7 +68,7 @@ You'll need:
 - `JWT_SECRET` — a long random string.
 - `GROQ_API_KEY` — free from <https://console.groq.com/keys>.
 - `SMTP_USER` / `SMTP_PASS` — a Gmail address + [app password][gmail-app-pw]
-  for sending OTP emails.
+  for sending verification emails.
 - `CLOUDINARY_*` — for storing the uploaded PDFs.
 
 [gmail-app-pw]: https://myaccount.google.com/apppasswords
@@ -72,6 +80,10 @@ Create `frontend/.env`:
 ```bash
 VITE_API_BASE_URL=http://localhost:5000/api
 ```
+
+> **macOS note**: port 5000 is used by AirPlay Receiver. If the backend
+> can't reach the API, switch to `PORT=5001` in `server/.env` and update
+> `VITE_API_BASE_URL` to match.
 
 ### 4. Run
 
@@ -118,6 +130,19 @@ The upload endpoint returns HTTP **423** with body
 frontend catches this, prompts the user for the password, and retries the
 same upload with a `password` form field. A wrong password returns
 **423** with `PDF_PASSWORD_INCORRECT`.
+
+---
+
+## Deployment
+
+- **Frontend (Vercel)** — set `VITE_API_BASE_URL` in Project Settings →
+  Environment Variables to your backend URL (e.g. `https://billbrew.onrender.com/api`),
+  then redeploy without build cache.
+- **Backend (Render)** — root directory `server`, build command `npm install`,
+  start command `npm start`. Copy every var from `server/.env.example` into
+  Render's Environment tab. **Do not** set `PORT` — Render assigns it.
+- **MongoDB Atlas** — under Network Access, allow `0.0.0.0/0` (or Render's
+  egress IPs).
 
 ---
 
