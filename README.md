@@ -132,20 +132,3 @@ same upload with a `password` form field. A wrong password returns
 **423** with `PDF_PASSWORD_INCORRECT`.
 
 ---
-
-## Deployment
-
-- **Frontend (Vercel)** — set `VITE_API_BASE_URL` in Project Settings →
-  Environment Variables to your backend URL (e.g. `https://billbrew.onrender.com/api`),
-  then redeploy without build cache.
-- **Backend (Render)** — root directory `server`, build command `npm install`,
-  start command `npm start`. Copy every var from `server/.env.example` into
-  Render's Environment tab. **Do not** set `PORT` — Render assigns it.
-- **MongoDB Atlas** — under Network Access, allow `0.0.0.0/0` (or Render's
-  egress IPs).
-
----
-
-## License
-
-MIT.
