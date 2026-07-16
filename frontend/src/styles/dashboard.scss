@@ -33,6 +33,7 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     margin: 0 0 4px;
+    color: #f4f8ff;
   }
   p { font-size: 14px; color: $muted; margin: 0; }
 }
@@ -52,10 +53,12 @@
   box-shadow: $shadow-sm;
 
   &--accent {
-    background: linear-gradient(135deg, $primary, $primary-dark);
-    color: #fff;
-    border-color: transparent;
-    .stat__label { color: rgba(255, 255, 255, .85); }
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(34, 166, 239, .16), transparent 60%),
+      linear-gradient(180deg, $surface-2, $accent-deep-2);
+    border-color: $primary-line;
+    .stat__label { color: $primary-bright; }
+    .stat__value { color: #f4f8ff; }
   }
 }
 .stat__label {
@@ -71,9 +74,10 @@
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  color: $ink;
   .cur { font-size: 12px; color: $muted; font-weight: 600; margin-right: 4px; }
 }
-.stat--accent .stat__value .cur { color: rgba(255,255,255,.8); }
+.stat--accent .stat__value .cur { color: $primary; }
 
 // Toolbar ---------------------------------------------------------
 .dashboard__toolbar {
@@ -92,6 +96,9 @@
   padding: 8px 12px;
   min-width: 260px;
   color: $muted;
+  transition: border-color .15s, box-shadow .15s;
+
+  &:focus-within { border-color: $primary; box-shadow: 0 0 0 3px $primary-light; }
 
   input {
     flex: 1;
@@ -111,6 +118,7 @@
   border: 1px solid $border;
   border-radius: $radius-lg;
   overflow: hidden;
+  box-shadow: $shadow-sm;
 }
 
 .dashboard__table-head,
@@ -129,7 +137,7 @@
 }
 
 .dashboard__table-head {
-  background: $bg;
+  background: $bg-2;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -141,12 +149,13 @@
 .dashboard__row {
   border-bottom: 1px solid $border;
   font-size: 14px;
+  color: $ink-soft;
   cursor: pointer;
   transition: background .12s;
 
   &:hover {
     background: $primary-light;
-    .row__chev { color: $primary-dark; transform: translateX(2px); }
+    .row__chev { color: $primary-bright; transform: translateX(2px); }
   }
   &:last-child { border-bottom: none; }
 }
@@ -165,14 +174,15 @@
 .issuer {
   display: flex; align-items: center; gap: 10px;
 
-  strong { display: block; font-weight: 600; }
+  strong { display: block; font-weight: 600; color: $ink; }
   em    { display: block; font-style: normal; font-size: 12px; color: $muted; }
 }
 .issuer__badge {
   width: 34px; height: 34px;
   border-radius: 8px;
   background: $primary-light;
-  color: $primary-dark;
+  color: $primary-bright;
+  border: 1px solid $primary-line;
   display: flex; align-items: center; justify-content: center;
   font-weight: 700;
   font-size: 11px;
@@ -180,10 +190,10 @@
 }
 
 .card-chip {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: $mono;
   font-size: 12px;
   padding: 3px 8px;
-  background: $bg;
+  background: $bg-2;
   border: 1px solid $border;
   border-radius: 999px;
   color: $ink-soft;

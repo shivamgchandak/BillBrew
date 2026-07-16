@@ -78,10 +78,6 @@ export default function Sidebar() {
           </div>
         )}
       </nav>
-
-      <div className="sidebar__footer">
-        <small>BillBrew · v1.0</small>
-      </div>
     </aside>
   );
 }

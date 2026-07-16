@@ -2,7 +2,7 @@
 
 .sidebar {
   width: 260px;
-  background: $surface;
+  background: $bg-2;
   border-right: 1px solid $border;
   padding: 22px 16px;
   display: flex;
@@ -21,13 +21,14 @@
   padding: 6px 8px;
   border-radius: 8px;
   transition: background .15s;
-  &:hover { background: $bg; }
+  &:hover { background: $surface-2; }
 
   img { width: 36px; height: 36px; }
   span {
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 750;
     letter-spacing: -0.02em;
+    color: $ink;
     b { color: $primary; }
   }
 }
@@ -53,10 +54,11 @@
   cursor: pointer;
   transition: background .15s, color .15s;
 
-  &:hover { background: $bg; }
+  &:hover { background: $surface-2; color: $ink; }
   &.is-active {
     background: $primary-light;
-    color: $primary-dark;
+    color: $primary-bright;
+    box-shadow: inset 2px 0 0 $primary;
   }
 
   .chev { margin-left: auto; transition: transform .2s; }
@@ -86,10 +88,10 @@
   border-radius: 6px;
   cursor: pointer;
   color: $ink-soft;
-  transition: background .15s;
+  transition: background .15s, color .15s;
 
-  &:hover { background: $bg; }
-  &.is-active { background: $primary-light; color: $primary-dark; }
+  &:hover { background: $surface-2; color: $ink; }
+  &.is-active { background: $primary-light; color: $primary-bright; }
   &.muted { color: $muted-2; cursor: default; }
 
   .dot {

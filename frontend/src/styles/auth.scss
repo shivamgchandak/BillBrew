@@ -2,31 +2,50 @@
 
 .auth {
   min-height: 100vh;
-  background:
-    radial-gradient(700px 400px at 90% -10%, rgba(249, 115, 22, .18), transparent 60%),
-    radial-gradient(600px 400px at -10% 20%, rgba(249, 115, 22, .1), transparent 60%),
-    $bg;
+  position: relative;
+  background: $bg;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 32px 16px;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(680px 420px at 50% -60px, rgba(34, 166, 239, .16), transparent 70%),
+      linear-gradient(180deg, #070b18, $bg 55%);
+  }
+  > * { position: relative; z-index: 1; }
 }
 
 .auth__card {
-  background: $surface;
+  background: linear-gradient(180deg, $surface 0%, $bg-2 100%);
   width: 100%;
   max-width: 420px;
   padding: 36px 32px 28px;
   border-radius: $radius-lg;
   border: 1px solid $border;
   box-shadow: $shadow-lg;
+  position: relative;
+
+  // Thin blue top hairline — a small crafted accent.
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 20px; right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, $primary-line, transparent);
+  }
 }
 
 .auth__brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   text-decoration: none;
   color: $ink;
 
@@ -34,9 +53,9 @@
 
   span {
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 750;
     letter-spacing: -0.02em;
-    b { color: $primary; font-weight: 800; }
+    b { color: $primary; font-weight: 750; }
   }
 }
 
@@ -45,6 +64,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   margin: 0 0 6px;
+  color: #f4f8ff;
 }
 
 .auth__subtitle {
@@ -77,15 +97,16 @@
     border: 1px solid $border-strong;
     font-size: 14px;
     font-family: inherit;
-    background: #fff;
+    background: $bg-2;
     color: $ink;
-    transition: border-color .15s, box-shadow .15s;
+    transition: border-color .15s, box-shadow .15s, background .15s;
 
     &::placeholder { color: $muted-2; }
     &:focus {
       outline: none;
       border-color: $primary;
-      box-shadow: 0 0 0 3px rgba(249, 115, 22, .15);
+      background: #0b1120;
+      box-shadow: 0 0 0 3px $primary-light;
     }
   }
 }
@@ -93,16 +114,17 @@
 .auth__btn {
   margin-top: 8px;
   background: $primary;
-  color: #fff;
+  color: #04121f;
   padding: 12px;
   border-radius: $radius-sm;
   border: none;
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
-  transition: background .15s;
-  &:hover:not(:disabled) { background: $primary-dark; }
-  &:disabled { opacity: .55; cursor: not-allowed; }
+  transition: background .15s, box-shadow .15s;
+  box-shadow: 0 6px 18px rgba(34, 166, 239, .22);
+  &:hover:not(:disabled) { background: $primary-bright; box-shadow: 0 8px 24px rgba(34, 166, 239, .32); }
+  &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
 .auth__footer {
@@ -112,9 +134,10 @@
   color: $muted;
 
   a {
-    color: $primary-dark;
+    color: $primary;
     font-weight: 600;
     text-decoration: none;
+    &:hover { color: $primary-bright; }
   }
 }
 
@@ -125,31 +148,32 @@
   border-radius: $radius-sm;
   font-size: 12px;
   color: $ink-soft;
-  border: 1px solid rgba(249, 115, 22, .2);
+  border: 1px solid $primary-line;
 
   p { margin: 2px 0; }
   code {
-    background: #fff;
+    background: $bg-2;
     padding: 1px 6px;
     border-radius: 4px;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-family: $mono;
     font-size: 11px;
+    color: $primary-bright;
   }
 }
 
 .auth__error {
-  background: #fef2f2;
+  background: $danger-bg;
   color: $danger;
-  border: 1px solid #fecaca;
+  border: 1px solid rgba(255, 95, 107, .35);
   padding: 10px 12px;
   border-radius: $radius-sm;
   font-size: 13px;
 }
 
 .auth__info {
-  background: #ecfdf5;
+  background: $success-bg;
   color: $success;
-  border: 1px solid #bbf7d0;
+  border: 1px solid rgba(52, 208, 160, .35);
   padding: 10px 12px;
   border-radius: $radius-sm;
   font-size: 13px;
@@ -170,14 +194,14 @@
     font-weight: 700;
     border: 1px solid $border-strong;
     border-radius: $radius-sm;
-    background: #fff;
+    background: $bg-2;
     font-family: inherit;
     color: $ink;
 
     &:focus {
       outline: none;
       border-color: $primary;
-      box-shadow: 0 0 0 3px rgba(249, 115, 22, .15);
+      box-shadow: 0 0 0 3px $primary-light;
     }
   }
 }
@@ -189,6 +213,6 @@
   color: $muted;
   margin-top: 6px;
 
-  button { background: none; border: none; padding: 0; color: $primary-dark; font-weight: 600; cursor: pointer; }
+  button { background: none; border: none; padding: 0; color: $primary; font-weight: 600; cursor: pointer; }
   button:disabled { color: $muted-2; cursor: not-allowed; }
 }

@@ -3,9 +3,9 @@ import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
-  ArrowLeft, Calendar, CreditCard, ExternalLink, Trash2, Info,
+  ArrowLeft, ExternalLink, Trash2, Info, RotateCw, Paperclip, Wifi,
 } from "lucide-react";
 import {
   getStatement, removeStatement,
@@ -15,6 +15,7 @@ export default function Statement() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
+  const [flipped, setFlipped] = useState(false);
 
   useEffect(() => {
     dispatch(getStatement(id));
@@ -25,6 +26,21 @@ export default function Statement() {
 
   const fmt = (n) =>
     typeof n === "number" ? n.toLocaleString(undefined, { maximumFractionDigits: 2 }) : "—";
+
+  const fmtDateTime = (d) => {
+    if (!d) return "—";
+    const date = new Date(d);
+    if (isNaN(date)) return d;
+    return date.toLocaleString(undefined, {
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit",
+    });
+  };
+
+  const cur = statement.currency || "INR";
+  const digits = statement.cardLast4 || statement.cardLast2 || "----";
+  const bank = statement.issuerFull || statement.issuer || "Unknown Bank";
+  const holder = statement.cardholderName || "Cardholder";
 
   const handleDelete = async () => {
     if (!confirm("Delete this statement? This cannot be undone.")) return;
@@ -44,116 +60,115 @@ export default function Statement() {
             <ArrowLeft size={14} /> Back to dashboard
           </button>
 
-          <div className="statement-card">
-            <div className="statement-card__head">
-              <div className="issuer-block">
-                <div className="issuer__badge lg">
-                  {(statement.issuer || "?").slice(0, 2).toUpperCase()}
+          {/* ---- Credit card ---- */}
+          <div className="cardstage">
+            <div
+              className={`ccard ${flipped ? "is-flipped" : ""}`}
+              onClick={() => setFlipped((f) => !f)}
+            >
+              {/* Front */}
+              <div className="ccard__face ccard__front">
+                <div className="ccard__top">
+                  <span className="ccard__digits">•••• {digits}</span>
+                  <span className="ccard__bank">{bank}</span>
                 </div>
-                <div>
-                  <h2>{statement.issuerFull || statement.issuer || "Unknown issuer"}</h2>
-                  <p>
-                    {statement.cardNetwork ? `${statement.cardNetwork} · ` : ""}
-                    Card ending •••• {statement.cardIdentifier || "----"}
-                  </p>
+
+                <div className="ccard__mid">
+                  <div className="ccard__chiprow">
+                    <div className="ccard__chip" />
+                    <Wifi className="ccard__wave" size={18} />
+                  </div>
+                  <div className="ccard__name">{holder}</div>
+                </div>
+
+                <div className="ccard__bottom">
+                  <div className="ccard__cell">
+                    <label>Due date</label>
+                    <span>{statement.dueDate || "—"}</span>
+                  </div>
+                  <div className="ccard__cell ccard__cell--center">
+                    <label>Billing period</label>
+                    <span>{statement.billingCycle || "—"}</span>
+                  </div>
+                  <div className="ccard__cell ccard__cell--right">
+                    <label>Statement due</label>
+                    <span><span className="cur">{cur}</span>{fmt(statement.totalAmount)}</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="statement-card__actions">
-                {statement.pdfUrl && (
-                  <a
-                    className="ghost-btn"
-                    href={statement.pdfUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <ExternalLink size={14} /> View PDF
-                  </a>
-                )}
-                <button className="ghost-btn danger" onClick={handleDelete}>
-                  <Trash2 size={14} /> Delete
-                </button>
+              {/* Back */}
+              <div className="ccard__face ccard__back">
+                <div className="ccard__stripe" />
+                <div className="ccard__backbody">
+                  <div className="ccard__backtitle">Statement summary</div>
+
+                  <div className="ccard__backgrid">
+                    <BCell label="Minimum due" value={fmt(statement.minimumAmount)} cur={cur} />
+                    <BCell label="Credit limit" value={fmt(statement.creditLimit)} cur={cur} />
+                    <BCell label="Available credit" value={fmt(statement.availableCredit)} cur={cur} />
+                    <BCell label="Statement date" value={statement.statementDate || "—"} />
+                    <BCell
+                      label="Added to BillBrew"
+                      value={fmtDateTime(statement.uploadedAt || statement.createdAt)}
+                    />
+                  </div>
+
+                  <div className="ccard__actions">
+                    {statement.pdfUrl ? (
+                      <a
+                        className="ccard__attach"
+                        href={statement.pdfUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Paperclip size={14} /> View statement.pdf
+                        <ExternalLink size={13} />
+                      </a>
+                    ) : (
+                      <div className="ccard__attach is-empty">
+                        <Paperclip size={14} /> No file attached
+                      </div>
+                    )}
+
+                    <button
+                      className="ccard__delete"
+                      onClick={(e) => { e.stopPropagation(); handleDelete(); }}
+                    >
+                      <Trash2 size={14} /> Delete
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="statement-grid">
-              <MetaTile
-                icon={<Calendar size={14} />}
-                label="Billing period"
-                value={statement.billingCycle}
-              />
-              <MetaTile
-                icon={<Calendar size={14} />}
-                label="Statement date"
-                value={statement.statementDate}
-              />
-              <MetaTile
-                icon={<Calendar size={14} />}
-                label="Payment due date"
-                value={statement.dueDate}
-                accent
-              />
-              <MetaTile
-                icon={<CreditCard size={14} />}
-                label="Cardholder"
-                value={statement.cardholderName}
-              />
+            <div className="flip-row">
+              <button
+                className={`flip-btn ${flipped ? "is-flipped" : ""}`}
+                onClick={() => setFlipped((f) => !f)}
+              >
+                <RotateCw size={14} />
+                {flipped ? "Show card front" : "Flip for statement details"}
+              </button>
             </div>
+          </div>
 
-            <div className="amount-grid">
-              <AmountTile
-                label="Total payable"
-                currency={statement.currency}
-                amount={statement.totalAmount}
-                emphasis
-              />
-              <AmountTile
-                label="Minimum due"
-                currency={statement.currency}
-                amount={statement.minimumAmount}
-              />
-              <AmountTile
-                label="Credit limit"
-                currency={statement.currency}
-                amount={statement.creditLimit}
-                muted
-              />
-              <AmountTile
-                label="Available credit"
-                currency={statement.currency}
-                amount={statement.availableCredit}
-                muted
-              />
-            </div>
-
-            <div className="statement-note">
-              <Info size={14} />
-              Extracted automatically from your uploaded PDF. Always verify
-              numbers against the original statement before making payments.
-            </div>
+          <div className="statement-note">
+            <Info size={14} />
+            Extracted automatically from your uploaded PDF. Always verify
+            numbers against the original statement before making payments.
           </div>
         </div>
       </div>
     </div>
   );
 
-  function MetaTile({ icon, label, value, accent }) {
+  function BCell({ label, value, cur }) {
     return (
-      <div className={`meta-tile ${accent ? "meta-tile--accent" : ""}`}>
-        <div className="meta-tile__label">{icon} {label}</div>
-        <div className="meta-tile__value">{value || "—"}</div>
-      </div>
-    );
-  }
-
-  function AmountTile({ label, currency, amount, emphasis, muted }) {
-    return (
-      <div className={`amount-tile ${emphasis ? "amount-tile--emp" : ""} ${muted ? "amount-tile--muted" : ""}`}>
-        <div className="amount-tile__label">{label}</div>
-        <div className="amount-tile__value">
-          {currency && <span className="cur">{currency}</span>}{" "}
-          {fmt(amount)}
-        </div>
+      <div className="ccard__bcell">
+        <label>{label}</label>
+        <span>{cur && value !== "—" && <span className="cur">{cur}</span>}{value}</span>
       </div>
     );
   }

@@ -64,12 +64,6 @@ export default function Dashboard() {
                 {new Set(list.map((s) => s.cardIdentifier).filter(Boolean)).size}
               </div>
             </div>
-            <div className="stat stat--accent">
-              <div className="stat__label">Total across all cards</div>
-              <div className="stat__value">
-                {currency && <span className="cur">{currency}</span>} {fmt(totalDue)}
-              </div>
-            </div>
           </div>
 
           <div className="dashboard__toolbar">

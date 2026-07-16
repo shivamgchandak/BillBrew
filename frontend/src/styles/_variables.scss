@@ -1,25 +1,44 @@
-// -------- BillBrew design tokens --------
-$primary:        #f97316;   // brand orange
-$primary-dark:   #ea580c;
-$primary-light:  #fff7ed;
+// -------- BillBrew design tokens · midnight blue --------
+// Palette pulled from the brand swatches: deep navy → electric blue on black.
 
-$ink:            #0f172a;
-$ink-soft:       #1e293b;
-$muted:          #64748b;
-$muted-2:        #94a3b8;
+$primary:        #22a6ef;   // electric blue accent
+$primary-dark:   #1487d1;   // pressed / hover
+$primary-bright: #4fc0ff;   // hover text on dark
+$primary-light:  rgba(34, 166, 239, .12);   // translucent blue tint (dark-safe)
+$primary-line:   rgba(34, 166, 239, .30);   // hairline / ring blue
 
-$bg:             #f8fafc;
-$surface:        #ffffff;
-$border:         #e2e8f0;
-$border-strong:  #cbd5e1;
+$accent-deep:    #0e3a6b;   // deep navy blue
+$accent-deep-2:  #14294d;
 
-$danger:         #dc2626;
-$success:        #16a34a;
+// Ink scale — light text on dark surfaces
+$ink:            #eaf1fb;
+$ink-soft:       #c2cde1;
+$muted:          #8493ad;
+$muted-2:        #5a6884;
+
+// Surfaces — layered dark navy/black
+$bg:             #05070e;   // page (near-black)
+$bg-2:           #080b16;
+$surface:        #0d1426;   // card
+$surface-2:      #111a30;   // raised / inset
+$border:         #1b2540;
+$border-strong:  #29365a;
+
+$danger:         #ff5f6b;
+$danger-bg:      rgba(255, 95, 107, .10);
+$success:        #34d0a0;
+$success-bg:     rgba(52, 208, 160, .10);
+$warn:           #f2b64a;
+$warn-bg:        rgba(242, 182, 74, .10);
 
 $radius:         12px;
 $radius-lg:      16px;
 $radius-sm:      8px;
 
-$shadow-sm:      0 1px 2px rgba(15, 23, 42, .06);
-$shadow-md:      0 6px 20px rgba(15, 23, 42, .08);
-$shadow-lg:      0 20px 40px rgba(15, 23, 42, .12);
+// Shadows read as depth against black — cool-tinted, restrained.
+$shadow-sm:      0 1px 2px rgba(0, 0, 0, .45);
+$shadow-md:      0 8px 24px rgba(0, 0, 0, .45);
+$shadow-lg:      0 24px 60px rgba(3, 8, 20, .70);
+$glow:           0 0 0 1px $primary-line, 0 8px 30px rgba(34, 166, 239, .16);
+
+$mono:           "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, monospace;

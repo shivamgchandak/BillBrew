@@ -108,6 +108,27 @@ UNIVERSAL RULES
    Accept sources: "Statement Period", "Billing Period", "Billing Cycle",
    "Statement From/To".
 
+   INTERPRETING THE MONTH — read carefully, this is the #1 source of errors:
+   (a) If the month is written with LETTERS (e.g. "18 Oct 2025", "OCT",
+       "October", "18-Nov-2025", "Nov 18, 2025") → trust it exactly as
+       written. Do NOT shift or reinterpret it.
+   (b) If the date is PURELY NUMERIC with separators - / . (e.g.
+       "18-10-2025", "18/10/2025", "18.10.2025") → it is DAY-MONTH-YEAR
+       (day first, Indian/DD-MM-YYYY convention). The MIDDLE number is the
+       month. So "18-10-2025" = 18 October 2025 (month 10 = Oct), NOT
+       November and NOT any other month. "07-12-2025" = 07 December 2025.
+       "05-01-2026" = 05 January 2026.
+   (c) Never assume US month-first (MM-DD-YYYY) for numeric dates.
+   (d) Disambiguation guard: if the FIRST number is greater than 12 it must
+       be the day (e.g. "18-10" → 18 is the day, 10 is the month). If the
+       SECOND number is greater than 12, then the format is month-first and
+       the second number is the day — but this is rare; prefer day-first.
+   (e) Numeric month → name map (use exactly): 01=Jan 02=Feb 03=Mar 04=Apr
+       05=May 06=Jun 07=Jul 08=Aug 09=Sep 10=Oct 11=Nov 12=Dec.
+   (f) Apply the SAME rule to billingCycle, statementDate and dueDate.
+   Worked example: input "18-10-2025 to 17-11-2025"
+       → billingCycle = "18 Oct 2025 - 17 Nov 2025" (NOT "Nov - Dec").
+
 8. Due date must come from a label containing "Due Date" / "Payment Due".
    Never derive it from statement date or billing-cycle end.
 
